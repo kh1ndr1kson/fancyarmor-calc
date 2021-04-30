@@ -48,21 +48,29 @@
         </v-select>
       </v-slide-y-transition>
     </v-col>
-    <v-col cols="12">
-      <v-slider
-        v-model="currentData.quantity"
-        color="#38383F"
-        track-color="#38383F"
-        thumb-color="#FF8400"
-        label="Количество"
-        min="1"
-        max="200"
-        thumb-label="always"
-      ></v-slider>
-    </v-col>
-    <v-col v-if="seen">
-      {{ currentData.price }}
-    </v-col>
+    <v-slide-x-transition v-if="isSeenRange">
+      <v-col>
+        <v-slider
+          v-model="currentData.quantity"
+          color="#38383F"
+          track-color="#38383F"
+          thumb-color="#FF8400"
+          label="Количество"
+          :min="min"
+          :max="max"
+          thumb-label="always"
+        ></v-slider>
+      </v-col>
+    </v-slide-x-transition>
+    <v-slide-x-transition v-if="isSeenResult">
+      <v-col>
+        <p>Цена за один товар: {{ currentData.price }} руб.</p>
+        <p>
+          Цена за {{ currentData.quantity }} товаров:
+          {{ currentData.price * currentData.quantity }} руб.
+        </p>
+      </v-col>
+    </v-slide-x-transition>
     <v-col>
       <v-btn color="#FF8400" dark>Рассчитать</v-btn>
     </v-col>
@@ -87,21 +95,44 @@ export default {
 			items: [],
 			sizes: [],
 			materials: [],
-			seen: true
+			min: 0,
+			max: 0,
+		}
+	},
+	computed: {
+		isSeenRange() {
+			return this.currentData.item_id ? true : false
+		},
+		isSeenResult() {
+			if ((this.items.length > 0 && this.currentData.item_id) && (this.sizes.length > 0 && this.currentData.size_id) && (this.materials.length > 0 && this.currentData.material_id)) {
+				return true
+			} else if ((this.items.length > 0 && this.currentData.item_id) && (this.sizes.length > 0 && this.currentData.size_id)) {
+				return true
+			} else if (this.items.length > 0 && this.currentData.item_id) {
+				return true
+			} else {
+				return false
+			}
 		}
 	},
 	methods: {
 		getItems() {
 			HTTP.get('/select/items.php')
 			.then( response => {
-				this.items = response.data
+				this.items = response.data.items
+
+				this.min = response.data.min
+				this.max = response.data.max
 			})
 			.catch( error => console.error('Hello error', error))
 		},
 		getSizes() {
 			HTTP.get('/select/sizes.php?item_id=' + this.currentData.item_id)
 			.then( response => {
-				this.sizes = response.data
+				this.sizes = response.data.sizes
+
+				this.min = response.data.min
+				this.max = response.data.max
 
 				this.currentData.size_id = 0
 				this.currentData.material_id = 0
@@ -111,7 +142,10 @@ export default {
 		getMaterials() {
 			HTTP.get('/select/materials.php?item_id=' + this.currentData.item_id + '&size_id=' + this.currentData.size_id)
 			.then( response => {
-				this.materials = response.data
+				this.materials = response.data.materials
+
+				this.min = response.data.min
+				this.max = response.data.max
 
 				this.currentData.material_id = 0
 			})
