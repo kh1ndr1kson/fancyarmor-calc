@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-col> <h1>Калькулятор</h1></v-col>
+    <v-col> <h1>Брендирование</h1></v-col>
     <v-col>
       <v-slide-y-transition>
         <v-select
@@ -12,7 +12,7 @@
           label="Товары"
           dense
           outlined
-          @change="getSizes"
+          @input="getSizes"
         >
         </v-select>
       </v-slide-y-transition>
@@ -28,14 +28,14 @@
           label="Размеры"
           dense
           outlined
-          @change="getMaterials"
+          @input="getMaterials"
         >
         </v-select>
       </v-slide-y-transition>
 
       <v-slide-y-transition>
         <v-select
-          v-if="currentData.size_id !== 0 && materials.length"
+          v-if="materials.length"
           :success="currentData.material_id ? true : false"
           v-model="currentData.material_id"
           :items="materials"
@@ -59,15 +59,16 @@
           :min="min"
           :max="max"
           thumb-label="always"
+          @change="changeQuantity"
         ></v-slider>
       </v-col>
     </v-slide-x-transition>
     <v-slide-x-transition v-if="isSeenResult">
       <v-col>
-        <p>Цена за один товар: {{ currentData.price }} руб.</p>
+        <p>Цена за один товар: {{ currentData.price | toPrice }}</p>
         <p>
           Цена за {{ currentData.quantity }} товаров:
-          {{ currentData.price * currentData.quantity }} руб.
+          {{ (currentData.price * currentData.quantity) | toPrice }}
         </p>
       </v-col>
     </v-slide-x-transition>
@@ -104,12 +105,25 @@ export default {
 			return this.currentData.item_id ? true : false
 		},
 		isSeenResult() {
-			if ((this.items.length > 0 && this.currentData.item_id) && (this.sizes.length > 0 && this.currentData.size_id) && (this.materials.length > 0 && this.currentData.material_id)) {
-				return true
-			} else if ((this.items.length > 0 && this.currentData.item_id) && (this.sizes.length > 0 && this.currentData.size_id)) {
-				return true
-			} else if (this.items.length > 0 && this.currentData.item_id) {
-				return true
+			// if (this.materials.length > 0) {
+			// 	if (this.currentData.material_id) {
+			// 		return true
+			// 	} else {
+			// 		return false
+			// 	}
+			// } else if (this.sizes.length > 0) {
+			// 	if (this.currentData.size_id) {
+			// 		return true
+			// 	} else {
+			// 		return false
+			// 	}
+			// }
+			if (this.items.length > 0) {
+				if (this.currentData.item_id) {
+					return true
+				} else {
+					return false
+				}
 			} else {
 				return false
 			}
@@ -127,7 +141,7 @@ export default {
 			.catch( error => console.error('Hello error', error))
 		},
 		getSizes() {
-			HTTP.get('/select/sizes.php?item_id=' + this.currentData.item_id)
+			HTTP.get('/select/sizes.php?item_id=' + this.currentData.item_id + '&q=' + this.currentData.quantity)
 			.then( response => {
 				this.sizes = response.data.sizes
 
@@ -136,6 +150,7 @@ export default {
 
 				this.currentData.size_id = 0
 				this.currentData.material_id = 0
+				this.currentData.price = response.data.price
 			})
 			.catch( error => console.error('Hello error', error))
 		},
@@ -150,6 +165,18 @@ export default {
 				this.currentData.material_id = 0
 			})
 			.catch( error => console.error('Hello error', error))
+		},
+		changeQuantity() {
+			HTTP.get('/change_quantity.php?item_id=' + this.currentData.item_id + '&size_id=' + this.currentData.size_id + '&material_id=' + this.currentData.material_id + '&q=' + this.currentData.quantity)
+			.then( response => {
+				this.currentData.price = response.data
+			})
+			.catch( error => console.error('Hello error', error))
+		}
+	},
+	filters: {
+		toPrice(val) {
+			return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' руб.'
 		}
 	},
 	mounted() {
