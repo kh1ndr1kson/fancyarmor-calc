@@ -62,6 +62,8 @@
     </v-col>
     <v-col v-if="seen">
       {{ currentData.price }}
+    </v-col>
+    <v-col>
       <v-btn color="#FF8400" dark>Рассчитать</v-btn>
     </v-col>
   </v-app>
@@ -93,9 +95,6 @@ export default {
 			HTTP.get('/select/items.php')
 			.then( response => {
 				this.items = response.data
-
-				this.currentData.size_id = 0
-				this.currentData.material_id = 0
 			})
 			.catch( error => console.error('Hello error', error))
 		},
@@ -104,13 +103,18 @@ export default {
 			.then( response => {
 				this.sizes = response.data
 
+				this.currentData.size_id = 0
 				this.currentData.material_id = 0
 			})
 			.catch( error => console.error('Hello error', error))
 		},
 		getMaterials() {
 			HTTP.get('/select/materials.php?item_id=' + this.currentData.item_id + '&size_id=' + this.currentData.size_id)
-			.then( response => this.materials = response.data)
+			.then( response => {
+				this.materials = response.data
+
+				this.currentData.material_id = 0
+			})
 			.catch( error => console.error('Hello error', error))
 		}
 	},
