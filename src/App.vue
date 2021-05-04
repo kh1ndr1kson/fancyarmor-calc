@@ -74,6 +74,27 @@
       </v-col>
     </v-slide-x-transition>
     <v-col>
+      <v-checkbox
+        v-model="currentData.rush"
+        label="Нужно срочно"
+        color="red"
+      ></v-checkbox>
+      <v-slide-y-transition>
+        <v-select
+          v-if="currentData.rush"
+          :success="currentData.markup_id ? true : false"
+          v-model="currentData.markup_id"
+          :items="markups"
+          item-value="id"
+          item-text="name"
+          label="Насколько срочно?"
+          dense
+          outlined
+        >
+        </v-select>
+      </v-slide-y-transition>
+    </v-col>
+    <v-col>
       <v-btn color="#FF8400" dark>Рассчитать</v-btn>
     </v-col>
   </v-app>
@@ -91,12 +112,15 @@ export default {
 				item_id: 0,
 				size_id: 0,
 				material_id: 0,
+				markup_id: 0,
 				quantity: 1,
 				price: 0,
+				rush: false
 			},
 			items: [],
 			sizes: [],
 			materials: [],
+			markups: [],
 			min: 0,
 			max: 0,
 		}
@@ -174,7 +198,12 @@ export default {
 				this.currentData.price = response.data
 			})
 			.catch( error => console.error('Hello error', error))
-		}
+		},
+		getMarkups() {
+			HTTP.get('/select/markups.php')
+			.then( response =>  this.markups = response.data )
+			.catch( error => console.error('Hello error', error))
+		},
 	},
 	filters: {
 		toPrice(val) {
@@ -182,7 +211,8 @@ export default {
 		}
 	},
 	mounted() {
-		this.getItems()
+		this.getItems(),
+		this.getMarkups()
 	}
 }
 </script>
