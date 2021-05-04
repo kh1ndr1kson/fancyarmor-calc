@@ -44,6 +44,7 @@
           label="Материалы"
           dense
           outlined
+          @input="fullProps"
         >
         </v-select>
       </v-slide-y-transition>
@@ -151,6 +152,17 @@ export default {
 				this.max = response.data.max
 
 				this.currentData.material_id = 0
+				this.currentData.quantity = response.data.min
+				this.currentData.price = response.data.price
+			})
+			.catch( error => console.error('Hello error', error))
+		},
+		fullProps() {
+			HTTP.get('/full_props.php?item_id=' + this.currentData.item_id + '&size_id=' + this.currentData.size_id + '&material_id=' + this.currentData.material_id)
+			.then( response => {
+				this.min = response.data.min
+				this.max = response.data.max
+
 				this.currentData.quantity = response.data.min
 				this.currentData.price = response.data.price
 			})
