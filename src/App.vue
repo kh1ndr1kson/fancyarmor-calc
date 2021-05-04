@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-col> <h1>Брендирование</h1></v-col>
+    <v-col> <h1>Брендирование</h1> </v-col>
     <v-col>
       <v-slide-y-transition>
         <v-select
@@ -105,19 +105,6 @@ export default {
 			return this.currentData.item_id ? true : false
 		},
 		isSeenResult() {
-			// if (this.materials.length > 0) {
-			// 	if (this.currentData.material_id) {
-			// 		return true
-			// 	} else {
-			// 		return false
-			// 	}
-			// } else if (this.sizes.length > 0) {
-			// 	if (this.currentData.size_id) {
-			// 		return true
-			// 	} else {
-			// 		return false
-			// 	}
-			// }
 			if (this.items.length > 0) {
 				if (this.currentData.item_id) {
 					return true
@@ -150,6 +137,7 @@ export default {
 
 				this.currentData.size_id = 0
 				this.currentData.material_id = 0
+				this.currentData.quantity = response.data.min
 				this.currentData.price = response.data.price
 			})
 			.catch( error => console.error('Hello error', error))
@@ -163,6 +151,8 @@ export default {
 				this.max = response.data.max
 
 				this.currentData.material_id = 0
+				this.currentData.quantity = response.data.min
+				this.currentData.price = response.data.price
 			})
 			.catch( error => console.error('Hello error', error))
 		},
