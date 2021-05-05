@@ -15,7 +15,7 @@
         </v-dialog>
       </v-row>
     </div>
-    <h1 class="header mb-3">Оформить заявку</h1>
+    <h1 class="header mt-5 mb-3">Оформить заявку</h1>
     <v-text-field
       v-model="name"
       :rules="nameRules"

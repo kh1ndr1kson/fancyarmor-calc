@@ -61,6 +61,16 @@
           :max="max"
           thumb-label="always"
           @change="changeQuantity"
+          ><template v-slot:append>
+            <v-text-field
+              v-model="currentData.quantity"
+              class="mt-0 pt-0"
+              hide-details
+              outlined
+              dense
+              type="number"
+              style="width: 100px"
+            ></v-text-field> </template
         ></v-slider>
       </v-col>
     </v-slide-x-transition>
