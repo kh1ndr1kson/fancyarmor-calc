@@ -105,17 +105,20 @@
       </v-slide-y-transition>
     </v-col>
     <v-col>
-      <v-btn color="#FF8400" dark>Рассчитать</v-btn>
+      <form-complete></form-complete>
     </v-col>
   </v-app>
 </template>
 
 <script>
 import { HTTP } from './plugins/axios'
+import FormComplete from './components/FormComplete'
 
 export default {
   name: 'App',
-  components: {},
+  components: {
+		FormComplete
+	},
 	data() {
 		return {
 			currentData: {
