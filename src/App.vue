@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-col> <h1>Брендирование</h1> </v-col>
+    <v-col> <h1 class="header mb-3">Брендирование</h1> </v-col>
     <v-col>
       <v-slide-y-transition>
         <v-select
@@ -50,7 +50,7 @@
       </v-slide-y-transition>
     </v-col>
     <v-slide-x-transition v-if="isSeenRange">
-      <v-col>
+      <v-col class="mt-4">
         <v-slider
           v-model="currentData.quantity"
           color="#38383F"
@@ -66,15 +66,29 @@
     </v-slide-x-transition>
     <v-slide-x-transition v-if="isSeenResult">
       <v-col>
-        <p>Цена за один товар: {{ currentData.price | toPrice }}</p>
-        <p>
-          Цена за {{ currentData.quantity }} товаров:
-          {{ (currentData.price * currentData.quantity) | toPrice }}
+        <p class="subtitle">
+          Цена за один товар: {{ currentData.price | toPrice }}
         </p>
+        <p class="subtitle">
+          Цена за {{ currentData.quantity }} товаров:
+          {{ (this.currentData.price * this.currentData.quantity) | toPrice }}
+        </p>
+        <p class="title">Итого к оплате: {{ summa | toPrice }}</p>
       </v-col>
     </v-slide-x-transition>
     <v-col>
-      <v-checkbox v-model="currentData.rush" label="Нужно срочно"></v-checkbox>
+      <v-checkbox
+        v-model="currentData.nds"
+        label="С НДС"
+        color="orange"
+        class="my-0 pb-0"
+      ></v-checkbox>
+      <v-checkbox
+        v-model="currentData.rush"
+        label="Нужно срочно"
+        color="orange"
+        class="my-0"
+      ></v-checkbox>
       <v-slide-y-transition>
         <v-select
           v-if="currentData.rush"
@@ -111,7 +125,8 @@ export default {
 				markup_id: 0,
 				quantity: 1,
 				price: 0,
-				rush: false
+				rush: false,
+				nds: false
 			},
 			items: [],
 			sizes: [],
@@ -119,6 +134,7 @@ export default {
 			markups: [],
 			min: 0,
 			max: 0,
+			ndsPercent: 0
 		}
 	},
 	computed: {
@@ -135,6 +151,27 @@ export default {
 			} else {
 				return false
 			}
+		},
+		summa() {
+			let ndsVal = 0
+			let markupVal = 0
+			let index = 0
+			let sum = this.currentData.price * this.currentData.quantity
+
+			this.currentData.nds ? ndsVal = this.ndsPercent / 100 : ndsVal = 0
+
+			if (this.currentData.rush && this.currentData.markup_id) {
+				this.markups.map( (item, idx) => { if (item.id == this.currentData.markup_id) index = idx })
+
+				markupVal = this.markups[index].percent / 100
+			} else {
+				markupVal = 0
+			}
+
+			let plusNds = sum * ndsVal
+			let plusMarkup = sum * markupVal
+
+			return sum + plusNds + plusMarkup
 		}
 	},
 	methods: {
@@ -195,11 +232,16 @@ export default {
 			})
 			.catch( error => console.error('Hello error', error))
 		},
-		getMarkups() {
-			HTTP.get('/select/markups.php')
-			.then( response =>  this.markups = response.data )
+		getOptions() {
+			HTTP.get('/select/options.php')
+			.then( response => {
+				this.markups = response.data.markups
+				this.ndsPercent = response.data.nds
+
+				this.currentData.markup_id = response.data.markups[0].id
+			})
 			.catch( error => console.error('Hello error', error))
-		},
+		}
 	},
 	filters: {
 		toPrice(val) {
@@ -208,7 +250,7 @@ export default {
 	},
 	mounted() {
 		this.getItems(),
-		this.getMarkups()
+		this.getOptions()
 	}
 }
 </script>
@@ -217,5 +259,9 @@ export default {
 .v-application--wrap {
   min-height: unset !important;
   min-width: unset !important;
+}
+.col {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 </style>
