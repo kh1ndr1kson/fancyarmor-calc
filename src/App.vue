@@ -71,9 +71,9 @@
         </p>
         <p class="subtitle">
           Цена за {{ currentData.quantity }} товаров:
-          {{ (this.currentData.price * this.currentData.quantity) | toPrice }}
+          {{ summa | toPrice }}
         </p>
-        <p class="title">Итого к оплате: {{ summa | toPrice }}</p>
+        <p class="title">Итого к оплате: {{ total | toPrice }}</p>
       </v-col>
     </v-slide-x-transition>
     <v-col>
@@ -153,10 +153,12 @@ export default {
 			}
 		},
 		summa() {
+			return this.currentData.price * this.currentData.quantity
+		},
+		total() {
 			let ndsVal = 0
 			let markupVal = 0
 			let index = 0
-			let sum = this.currentData.price * this.currentData.quantity
 
 			this.currentData.nds ? ndsVal = this.ndsPercent / 100 : ndsVal = 0
 
@@ -168,10 +170,10 @@ export default {
 				markupVal = 0
 			}
 
-			let plusNds = sum * ndsVal
-			let plusMarkup = sum * markupVal
+			let plusNds = this.summa * ndsVal
+			let plusMarkup = this.summa * markupVal
 
-			return sum + plusNds + plusMarkup
+			return this.summa + plusNds + plusMarkup
 		}
 	},
 	methods: {
