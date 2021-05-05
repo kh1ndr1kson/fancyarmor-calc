@@ -74,11 +74,7 @@
       </v-col>
     </v-slide-x-transition>
     <v-col>
-      <v-checkbox
-        v-model="currentData.rush"
-        label="Нужно срочно"
-        color="red"
-      ></v-checkbox>
+      <v-checkbox v-model="currentData.rush" label="Нужно срочно"></v-checkbox>
       <v-slide-y-transition>
         <v-select
           v-if="currentData.rush"
