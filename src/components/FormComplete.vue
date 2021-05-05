@@ -1,5 +1,20 @@
 <template>
   <v-form ref="form" v-model="valid" lazy-validation>
+    <div class="modal">
+      <v-row justify="center">
+        <v-dialog v-model="dialog" persistent max-width="290">
+          <v-card>
+            <v-card-title class="headline">Спасибо!</v-card-title>
+            <v-card-text
+              >Заявка на брендирование успешно отправлена.</v-card-text
+            >
+            <v-card-actions>
+              <v-btn color="green darken-1" text @click="reload">Ок</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+    </div>
     <h1 class="header mb-3">Оформить заявку</h1>
     <v-text-field
       v-model="name"
@@ -63,6 +78,7 @@ export default {
 	name: "form-complete",
 	data() {
 		return {
+			dialog: false,
 			valid: false,
 			name: null,
 			email: null,
@@ -95,13 +111,22 @@ export default {
 				}
 			}
 
+			let headers = {
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+			}
+
 			if (this.$refs.form.validate() ) {
-				HTTP.post('/send.php', data)
+				HTTP.post('/send.php', data, headers)
 				.then( response => {
-					console.log(response)
+					if (response.status === 200) {
+						this.dialog = true
+					}
 				})
 				.catch( error => console.error('Hello error', error))
 			}
+		},
+		reload() {
+			location.reload()
 		}
 	}
 }
