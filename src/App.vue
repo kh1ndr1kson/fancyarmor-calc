@@ -106,14 +106,16 @@
         </v-select>
       </v-slide-y-transition>
     </v-col>
-    <v-col>
-      <form-complete></form-complete>
+    <v-col v-if="formSeen">
+      <v-slide-y-transition>
+        <form-complete :complete="currentData"></form-complete>
+      </v-slide-y-transition>
     </v-col>
   </v-app>
 </template>
 
 <script>
-import { HTTP } from './plugins/axios'
+import { HTTP } from '@/plugins/axios'
 import FormComplete from './components/FormComplete'
 
 export default {
@@ -153,6 +155,19 @@ export default {
 				} else {
 					return false
 				}
+			} else {
+				return false
+			}
+		},
+		formSeen() {
+			if(
+				this.currentData.item_id &&
+				this.currentData.price &&
+				this.currentData.quantity &&
+				this.summa &&
+				this.total
+			) {
+				return true
 			} else {
 				return false
 			}

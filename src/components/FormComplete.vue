@@ -1,5 +1,6 @@
 <template>
   <v-form ref="form" v-model="valid" lazy-validation>
+    <h1 class="header mb-3">Оформить заявку</h1>
     <v-text-field
       v-model="name"
       :rules="nameRules"
@@ -28,6 +29,15 @@
       dense
     ></v-text-field>
 
+    <v-textarea
+      v-model="message"
+      name="message"
+      label="Комментарий"
+      outlined
+      dense
+    >
+    </v-textarea>
+
     <v-checkbox
       v-model="terms"
       :rules="[
@@ -47,7 +57,7 @@
 </template>
 
 <script>
-//import { HTTP } from './plugins/axios'
+import { HTTP } from '@/plugins/axios'
 
 export default {
 	name: "form-complete",
@@ -57,7 +67,8 @@ export default {
 			name: null,
 			email: null,
 			phone: null,
-			comment: null,
+			message: null,
+			terms: false,
 			nameRules: [ v => !!v || 'Как Вас зовут?', ],
 			emailRules: [
         v => !!v || 'Заполните E-mail',
@@ -74,7 +85,23 @@ export default {
 	},
 	methods: {
 		send () {
-			this.$refs.form.validate()
+			let data = {
+				order: this.complete,
+				form: {
+					name: this.name,
+					email: this.email,
+					phone: this. phone,
+					message: this.message,
+				}
+			}
+
+			if (this.$refs.form.validate() ) {
+				HTTP.post('/send.php', data)
+				.then( response => {
+					console.log(response)
+				})
+				.catch( error => console.error('Hello error', error))
+			}
 		}
 	}
 }
