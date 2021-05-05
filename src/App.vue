@@ -82,12 +82,14 @@
         label="С НДС"
         color="orange"
         class="my-0 pb-0"
+        dense
       ></v-checkbox>
       <v-checkbox
         v-model="currentData.rush"
         label="Нужно срочно"
         color="orange"
         class="my-0"
+        dense
       ></v-checkbox>
       <v-slide-y-transition>
         <v-select

@@ -1,6 +1,9 @@
 import Vue from 'vue'
+import VueMask from 'v-mask'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
+
+Vue.use(VueMask)
 
 Vue.config.productionTip = false
 
