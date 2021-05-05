@@ -5,7 +5,7 @@ import vuetify from './plugins/vuetify'
 
 Vue.use(VueMask)
 
-Vue.config.productionTip = false
+Vue.config.productionTip = true
 
 new Vue({
   vuetify,
