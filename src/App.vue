@@ -49,8 +49,9 @@
         </v-select>
       </v-slide-y-transition>
     </v-col>
+
     <v-slide-x-transition v-if="isSeenRange">
-      <v-col class="mt-4">
+      <v-col class="mt-5">
         <v-slider
           v-model="currentData.quantity"
           color="#38383F"
@@ -61,24 +62,36 @@
           :max="max"
           thumb-label="always"
           @change="changeQuantity"
-          ><template v-slot:append>
-            <v-text-field
-              v-model="currentData.quantity"
-              class="mt-0 pt-0"
-              hide-details
-              outlined
-              dense
-              type="number"
-              style="width: 100px"
-            ></v-text-field> </template
-        ></v-slider>
+        >
+          <template v-slot:append>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="currentData.quantity"
+                  :min="min"
+                  :max="max"
+                  v-on="on"
+                  slot="badge"
+                  class="mt-0 pt-0"
+                  hide-details
+                  outlined
+                  dense
+                  type="number"
+                  style="width: 100px"
+                ></v-text-field>
+              </template>
+              <span
+                >Если вам необходимо количество, которое не входит в данный
+                тираж, свяжитесь с нами в разделе "КОНТАКТЫ"</span
+              >
+            </v-tooltip>
+          </template>
+        </v-slider>
       </v-col>
     </v-slide-x-transition>
     <v-slide-x-transition v-if="isSeenResult">
       <v-col>
-        <p class="subtitle">
-          Цена за один товар: {{ currentData.price | toPrice }}
-        </p>
+        <p class="subtitle">Цена за один товар: {{ onePrice | toPrice }}</p>
         <p class="subtitle">
           Цена за {{ currentData.quantity }} товаров:
           {{ summa | toPrice }}
@@ -182,15 +195,23 @@ export default {
 				return false
 			}
 		},
+		onePrice() {
+			let ndsVal = 0
+			this.currentData.nds ? ndsVal = this.ndsPercent / 100 : ndsVal = 0
+			let plusNds = this.currentData.price * ndsVal
+
+			return Number(this.currentData.price) + plusNds
+		},
 		summa() {
-			return this.currentData.price * this.currentData.quantity
+			let ndsVal = 0
+			this.currentData.nds ? ndsVal = this.ndsPercent / 100 : ndsVal = 0
+			let plusNds = (this.currentData.price * this.currentData.quantity) * ndsVal
+
+			return (this.currentData.price * this.currentData.quantity) + plusNds
 		},
 		total() {
-			let ndsVal = 0
 			let markupVal = 0
 			let index = 0
-
-			this.currentData.nds ? ndsVal = this.ndsPercent / 100 : ndsVal = 0
 
 			if (this.currentData.rush && this.currentData.markup_id) {
 				this.markups.map( (item, idx) => { if (item.id == this.currentData.markup_id) index = idx })
@@ -200,10 +221,9 @@ export default {
 				markupVal = 0
 			}
 
-			let plusNds = this.summa * ndsVal
 			let plusMarkup = this.summa * markupVal
 
-			return this.summa + plusNds + plusMarkup
+			return this.summa + plusMarkup
 		}
 	},
 	methods: {
