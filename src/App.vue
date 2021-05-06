@@ -80,10 +80,7 @@
                   style="width: 100px"
                 ></v-text-field>
               </template>
-              <span
-                >Если вам необходимо количество, которое не входит в данный
-                тираж, свяжитесь с нами в разделе "КОНТАКТЫ"</span
-              >
+              <span>{{ tooltip }}</span>
             </v-tooltip>
           </template>
         </v-slider>
@@ -164,7 +161,8 @@ export default {
 			markups: [],
 			min: 0,
 			max: 0,
-			ndsPercent: 0
+			ndsPercent: 0,
+			tooltip: null
 		}
 	},
 	computed: {
@@ -289,6 +287,7 @@ export default {
 			.then( response => {
 				this.markups = response.data.markups
 				this.ndsPercent = response.data.nds
+				this.tooltip = response.data.tooltip
 
 				this.currentData.markup_id = response.data.markups[0].id
 			})
