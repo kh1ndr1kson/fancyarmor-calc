@@ -244,8 +244,8 @@ export default {
 				this.min = response.data.min
 				this.max = response.data.max
 
-				this.currentData.size_id = 0
-				this.currentData.material_id = 0
+				this.currentData.size_id = response.data.size_id
+				this.currentData.material_id = response.data.material_id
 				this.currentData.quantity = response.data.min
 				this.currentData.price = response.data.price
 			})
@@ -259,7 +259,7 @@ export default {
 				this.min = response.data.min
 				this.max = response.data.max
 
-				this.currentData.material_id = 0
+				this.currentData.material_id = response.data.material_id
 				this.currentData.quantity = response.data.min
 				this.currentData.price = response.data.price
 			})
