@@ -239,6 +239,7 @@ export default {
 			HTTP.get('/select/sizes.php?item_id=' + this.currentData.item_id + '&q=' + this.currentData.quantity)
 			.then( response => {
 				this.sizes = response.data.sizes
+				this.materials = response.data.materials
 
 				this.min = response.data.min
 				this.max = response.data.max
